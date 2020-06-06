@@ -2,13 +2,40 @@
 <html>
 <head>
 <script>
+
+// 蓝牙设备提供的服务的 UUIDs
+//加速度传感器服务
+var ACCELEROMETER_SERVICE = "e95d0753-251d-470a-a062-fa1922dfa9a8";
+//LED服务
+var LED_SERVICE = "e95dd91d-251d-470a-a062-fa1922dfa9a8";
+//设备信息服务
+var DEVICE_INFORMATION_SERVICE = "0000180a-0000-1000-8000-00805f9b34fb";
+//UART服务
+var UART_SERVICE = "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
+//温度传感器服务
+var TEMPERATURE_SERVICE = "e95d6100-251d-470a-a062-fa1922dfa9a8";
+
+
+//连接设备或断开连接
+function DiscoveOrDisConnect() {
+    if (Connected) {
+        Connected_Device.gatt.disconnect();
+        console.log("===>用户断开了连接<===")
+        UpdateUI();
+    }
+    else {
+        DiscoverDevice();
+        UpdateUI();
+    }
+}
+
 //发现蓝牙设备
 function DiscoverDevice() {
     //过滤出我们需要的蓝牙设备
     //过滤器
     var options = {
             acceptAllDevices: true,
-            optionalServices: []
+            optionalServices: [DEVICE_INFORMATION_SERVICE, ACCELEROMETER_SERVICE, LED_SERVICE, UART_SERVICE, TEMPERATURE_SERVICE]
     };
 
     navigator.bluetooth.requestDevice(options)
