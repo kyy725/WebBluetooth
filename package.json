@@ -1,0 +1,19 @@
+{
+  "name": "webbluetooth",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kyy725/webbluetooth.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kyy725/webbluetooth/issues"
+  },
+  "homepage": "https://github.com/kyy725/webbluetooth#readme"
+}
