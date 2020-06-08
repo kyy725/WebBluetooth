@@ -61,17 +61,9 @@ var GENERIC_ATTRIBUTE_SERVICE = "00001801-0000-1000-8000-00805f9b34fb";
 //设备信息服务
 var DEVICE_INFORMATION_SERVICE = "0000180a-0000-1000-8000-00805f9b34fb";
 
-var CUSTOMER_SERVICE1 = "00001530-0000-3512-2118-0009af100700";
+var CUSTOMER_SERVICE1 = "6455e670-a146-11e2-9e96-0800200c9afe";
 
-var CUSTOMER_SERVICE2 = "00001811-0000-1000-8000-00805f9b34fb";
 
-var CUSTOMER_SERVICE3 = "00001802-0000-1000-8000-00805f9b34fb";
-
-var CUSTOMER_SERVICE4 = "0000180d-0000-1000-8000-00805f9b34fb";
-
-var CUSTOMER_SERVICE5 = "0000fee0-0000-1000-8000-00805f9b34fb";
-
-var CUSTOMER_SERVICE6 = "0000fee1-0000-1000-8000-00805f9b34fb";
 
 //设备抽象
 var Connected_Device;
@@ -101,7 +93,7 @@ function DiscoverDevice() {
         
         //acceptAllDevices: true,
        // optionalServices: [ GENERIC_ACCESS_SERVICE ],
-        optionalServices: [CUSTOMER_SERVICE1, CUSTOMER_SERVICE2, CUSTOMER_SERVICE3, CUSTOMER_SERVICE4, CUSTOMER_SERVICE5, CUSTOMER_SERVICE6, GENERIC_ACCESS_SERVICE, GENERIC_ATTRIBUTE_SERVICE, DEVICE_INFORMATION_SERVICE]
+        optionalServices: [CUSTOMER_SERVICE1, GENERIC_ACCESS_SERVICE, GENERIC_ATTRIBUTE_SERVICE, DEVICE_INFORMATION_SERVICE]
        // optionalServices: [*],
     };
 
@@ -202,7 +194,7 @@ function SetString(){
     let str=document.getElementById("ssid").value;
     str+="+";
     str+=document.getElementById("password").value;
-    add_log("set str: " + str.value);
+    add_log("set str: " + str);
     let arr= new Array();
 
     for (let i = 0; i < str.length; i++) {
