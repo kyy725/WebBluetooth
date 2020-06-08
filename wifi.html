@@ -61,10 +61,11 @@ var GENERIC_ATTRIBUTE_SERVICE = "00001801-0000-1000-8000-00805f9b34fb";
 //设备信息服务
 var DEVICE_INFORMATION_SERVICE = "0000180a-0000-1000-8000-00805f9b34fb";
 
-var CUSTOMER_SERVICE1 = "6455e670-a146-11e2-9e96-0800200c9afe";
+var WIFISETTING_SERVICE = "6455e670-a146-11e2-9e96-0800200c9afe";
 
+var WIFISETTING_CHARACTERISTIC = "6455e670-a146-11e2-9e96-0800200c9a66";
 
-
+var WifiSetting_char;
 //设备抽象
 var Connected_Device;
 //连接状态
@@ -93,8 +94,8 @@ function DiscoverDevice() {
         
         //acceptAllDevices: true,
        // optionalServices: [ GENERIC_ACCESS_SERVICE ],
-        optionalServices: [CUSTOMER_SERVICE1, GENERIC_ACCESS_SERVICE, GENERIC_ATTRIBUTE_SERVICE, DEVICE_INFORMATION_SERVICE]
-       // optionalServices: [*],
+       // optionalServices: [CUSTOMER_SERVICE1, GENERIC_ACCESS_SERVICE, GENERIC_ATTRIBUTE_SERVICE, DEVICE_INFORMATION_SERVICE]
+       optionalServices: [WIFISETTING_SERVICE]
     };
 
     navigator.bluetooth.requestDevice(options)
@@ -168,7 +169,10 @@ function DiscoverService() {
                     Characteristics.forEach(Characteristic => {
 
                         CharacteristicsDiscovered++; add_log('>> 特征值(UUID): ' + Characteristic.uuid);
-
+                        if( Characteristic.uuid == WIFISETTING_CHARACTERISTIC){
+                            WifiSetting_char = Characteristic;
+                            add_log(">find wifi setting characteristic");
+                        }
                         if (ServicesDiscovered == ServiceSum && CharacteristicsDiscovered == CharacteristicsSum) {
                             add_log("===>服务搜索完成<===");
                             //更新UI的信息
@@ -203,7 +207,7 @@ function SetString(){
     arr.push(10);
 
     let Buff=new Uint8Array(arr);
-    UART_State.writeValue(Buff.buffer);
+    WifiSetting_char.writeValue(Buff.buffer);
 }
 
 //初始化用户界面
