@@ -227,8 +227,10 @@ function UpdateUI() {
 }
 
 function add_log( log ) {
-    document.getElementById("text").innerHTML += log;
-    document.getElementById("text").innerHTML += "<br>";
+    var obj = document.getElementById("text");
+    obj.innerHTML += log;
+    obj.innerHTML += "<br>";
+    obj.scrollTop = obj.scrollHeight;
 }
 
 InitUI();
@@ -238,7 +240,7 @@ UpdateUI();
 
 <body>
 
-<h1>bluetooth config wifi</h1>
+<h1>bluetooth config wifi 1</h1>
 <button id="scan" class="btn" type="button" onclick="DiscoveOrDisConnect()">scan</button>
 <h2>Ssid:</h2><input class="text" type="text" id="ssid">
 <h2>Password:</h2><input class="text" type="text" id="password">
