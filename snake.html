@@ -1,0 +1,273 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        #map{
+            width: 800px;
+            height: 600px;
+            background-color: pink;
+            position: relative;
+        }
+    </style>
+</head>
+<body>
+<div id="map" >
+
+</div>
+<script src="common.js"></script>
+<script>
+
+    //console.log(my$("map"))
+    //对象:随机数/小方块
+
+    //产生随机数的对象
+    ((function () {
+        //1.产生随机数的构造函数
+        function Random() {
+
+        }
+        //2添加方法
+        Random.prototype.getRandom=function (min,max) {
+            return parseInt(Math.random()*(max-min)+min)
+        }
+        //3把局部变量暴露给window
+        window.Random=Random;
+    })());
+
+    var rm=new Random();
+
+
+    //产生小方块对象
+    ((function () {
+
+        function Food(width,height,color) {
+            this.width=width||20;
+            this.height=height||20;
+            this.color=color||"green";
+            //随机产生
+            this.x=0;
+            this.y=0;
+            //创建盒子
+            this.element=document.createElement("div");
+        }
+        //设置小方块显示的效果和位置
+        Food.prototype.init = function (map) {
+
+            var elements=[];
+            // 每次在创建小方块之前先删除之前的小方块，保证map中只有一个小方块
+            function remove() {
+                for (var i = 0; i < elements.length; i++) {
+                    elements[i].parentElement.removeChild(elements[i]);
+                    elements.splice(i, 1); // 清空数组，从i的位置删除1个元素
+                }
+            }
+            remove();
+            var div = this.element;
+            map.appendChild(div);
+            div.style.width = this.width + "px";
+            div.style.height = this.height + "px";
+            div.style.backgroundColor = this.color;
+            div.style.borderRadius = "50%";
+            div.style.position = "absolute";
+
+            this.x = new Random().getRandom(0, map.offsetWidth / this.width) * this.width;
+            this.y = new Random().getRandom(0, map.offsetHeight / this.height) * this.height;
+            div.style.left = this.x + "px";
+            div.style.top = this.y + "px";
+
+            // 把div加到数组中
+            elements.push(div);
+        };
+
+        //暴露给window
+        window.Food=Food;
+    })());
+    // var timeId=setInterval(function () {
+    //var food=new Food();
+    //food.init(my$("map"));
+    // },2000)
+    //小蛇
+    ((function () {
+        // 小蛇每一块的宽高
+        function Snack(width, height, direction){
+
+            this.width = width || 20;
+            this.height = height || 20;
+            this.direction = direction || "right";
+            this.beforeDirection = this.direction;
+            // 小蛇组成身体的每个小方块
+            this.body = [
+                {x: 3, y: 2, color: "red"},
+                {x: 2, y: 2, color: "orange"},
+                {x: 1, y: 2, color: "orange"}
+            ];
+        }
+        //身体
+        var elements=[];
+        Snack.prototype.init = function (map) {
+            // 显示小蛇之前删除小蛇
+
+            if (elements.length>=2){
+                remove();
+            }
+            function remove() {
+                for (var i = 0; i <elements.length; i++) {
+                    my$("map").removeChild(elements[i]);
+                    console.log(elements.length);
+                }
+                elements.splice(0,elements.length);
+            }
+            // 循环创建小蛇身体div
+            for (var i = 0; i < this.body.length; i++) {
+                var div = document.createElement("div");
+                map.appendChild(div);
+                div.style.width = this.width + "px";
+                div.style.height = this.height + "px";
+                div.style.borderRadius = "50%";
+                div.style.position = "absolute";
+                // 移动方向，移动的时候设置
+                // 坐标位置
+                var tempObj = this.body[i];
+                div.style.left = tempObj.x * this.width + "px";
+                div.style.top = tempObj.y * this.width + "px";
+                div.style.backgroundColor = tempObj.color;
+                // 将小蛇添加到数组
+                elements.push(div);
+            }
+        };
+        //移动
+        Snack.prototype.move = function (food, map) {
+            var index = this.body.length - 1; // 小蛇身体的索引
+            // 不考虑小蛇头部
+            for (var i = index; i > 0; i--) { // i>0 而不是 i>=0
+                this.body[i].x = this.body[i - 1].x;
+                this.body[i].y = this.body[i - 1].y;
+            }
+
+            // 小蛇头部移动
+            switch (this.direction) {
+                case "right" :
+                    // if(this.beforeDirection !== "left") {
+                    this.body[0].x += 1;
+                    // }
+                    break;
+                case "left" :
+                    this.body[0].x -= 1;
+                    break;
+                case "up" :
+                    this.body[0].y -= 1;
+                    break;
+                case "down" :
+                    this.body[0].y += 1;
+                    break;
+                default:
+                    break;
+            }
+
+            // 小蛇移动的时候，当小蛇偷坐标和食物的坐标相同表示吃到食物
+            var headX = this.body[0].x * this.width;
+            var headY = this.body[0].y * this.height;
+
+            // 吃到食物，将尾巴复制一份加到小蛇body最后
+            if ((headX === food.x) && (headY === food.y)) {
+                var last = this.body[this.body.length - 1];
+                this.body.push({
+                    x: last.x,
+                    y: last.y,
+                    color: last.color
+                });
+
+                // 删除食物
+                food.init(map);
+            }
+        };
+        window.Snack=Snack;
+    })());
+    //var timeId=setInterval(function () {
+    var snack=new Snack();
+    snack.init(my$("map"));
+    //},2000)
+
+
+    //游戏模块
+    ((function () {
+        function Game(map) {
+
+            this.food = new Food(20, 20, "purple");
+            this.snack = new Snack(20, 20);
+            this.map = my$("map");
+            that = this;
+        }
+        Game.prototype.init = function (nanDu) {
+            //console.log(this.map);
+            //console.log(this.autoRun);
+            // console.log(map);
+            this.food.init(this.map);
+            this.snack.init(this.map);
+            this.autoRun(nanDu);
+            this.changeDirection();
+        }
+        Game.prototype.autoRun = function (nanDu) {
+
+            var timeId = setInterval(function () {
+                this.snack.move(this.food, this.map);
+                this.snack.init(this.map);
+
+                // 判断最大X,Y边界
+                var maxX = this.map.offsetWidth / this.snack.width;
+                var maxY = this.map.offsetHeight / this.snack.height;
+
+                // X方向边界
+                if ((this.snack.body[0].x < 0) || (this.snack.body[0].x >= maxX)) {
+                    // 撞墙了
+                    clearInterval(timeId);
+                    alert("Oops, Game Over!");
+                }
+
+                // Y方向边界
+                if ((this.snack.body[0].y < 0) || (this.snack.body[0].y >= maxY)) {
+                    // 撞墙了
+                    clearInterval(timeId);
+                    alert("Oops, Game Over!");
+                }
+
+            }.bind(that), nanDu); // 使用bind，那么init方法中所有的this都将被bind的参数that替换
+        }
+        Game.prototype.changeDirection = function () {
+
+            addAnyEventListener(document, "keydown", function (e) {
+                // 每次按键之前保存按键方向
+                this.snack.beforeDirection = this.snack.direction;
+
+                switch (e.keyCode) {
+                    case 37: // 左
+                        this.snack.beforeDirection !== "right" ? this.snack.direction = "left" : this.snack.direction = "right";
+                        break;
+                    case 38: // 上
+                        this.snack.beforeDirection !== "down" ? this.snack.direction = "up" : this.snack.direction = "down";
+                        break;
+                    case 39: // 右
+                        this.snack.beforeDirection !== "left" ? this.snack.direction = "right" : this.snack.direction = "left";
+                        break;
+                    case 40: // 下
+                        this.snack.beforeDirection !== "up" ? this.snack.direction = "down" : this.snack.direction = "up";
+                        break;
+                    default:
+                        break;
+                }
+            }.bind(that));
+
+        }
+
+        window.Game=Game;
+    })())
+    var nanDu=200-prompt("请输入你需要的难度1-100!");
+    var game = new Game();
+    game.init(nanDu);
+
+
+
+</script>
+</body>
+</html>
